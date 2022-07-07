@@ -5,15 +5,18 @@ from fastapi.security import OAuth2PasswordRequestForm
 from jose import jwt
 from sqlalchemy.orm import Session
 
-from . import models, schemas, settings
-from .crud import get_user
-from .dependencies import get_db
-from .exceptions import HttpUnauthorized, RecordNotFoundError
+from api import settings
+from api.ddb_models import UserModel
+from api.dependencies import get_db
+from api.exceptions import HttpUnauthorized, RecordNotFoundError
+
+from .models import Token
+from .queries import get_user
 
 auth_router = APIRouter()
 
 
-def authenticate_user(db: Session, email: str, password: str) -> models.UserModel:
+def authenticate_user(db: Session, email: str, password: str) -> UserModel:
     try:
         user = get_user(db, email)
     except RecordNotFoundError:
@@ -30,7 +33,7 @@ def create_access_token(**payload_data):
     return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
 
 
-@auth_router.post("/token", response_model=schemas.Token)
+@auth_router.post("/token", response_model=Token)
 def get_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = authenticate_user(db, form_data.username, form_data.password)
     access_token = create_access_token(sub=user.email)

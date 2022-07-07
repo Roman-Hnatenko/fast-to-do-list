@@ -4,8 +4,9 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 
+from api.ddb_models import UserModel
+
 from . import settings
-from .crud import get_user
 from .database import SessionLocal
 from .exceptions import HttpUnauthorized
 
@@ -31,5 +32,5 @@ async def require_auth(token: str = Depends(oauth2_scheme)):
     return email
 
 
-async def get_current_user(email: str = Depends(require_auth), db: Session = Depends(get_db)):
-    return get_user(db, email)
+async def get_current_user(email: str = Depends(require_auth), db: Session = Depends(get_db)) -> UserModel:
+    return db.query(UserModel).filter(UserModel.email == email).first()
