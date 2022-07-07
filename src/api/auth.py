@@ -1,20 +1,37 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordRequestForm
+from datetime import datetime, timedelta
 
-from .auth_utils import authenticate_user, create_access_token
-from .schemas import Token
+from fastapi import APIRouter, Depends
+from fastapi.security import OAuth2PasswordRequestForm
+from jose import jwt
+from sqlalchemy.orm import Session
+
+from . import models, schemas, settings
+from .crud import get_user
+from .dependencies import get_db
+from .exceptions import HttpUnauthorized, RecordNotFoundError
 
 auth_router = APIRouter()
 
 
-@auth_router.post("/token", response_model=Token)
-async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
-    user = authenticate_user(form_data.username, form_data.password)
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    access_token = create_access_token(sub=user.username)
+def authenticate_user(db: Session, email: str, password: str) -> models.UserModel:
+    try:
+        user = get_user(db, email)
+    except RecordNotFoundError:
+        raise HttpUnauthorized('Incorrect username or password')
+    if not settings.pwd_context.verify(password, user.hashed_password):
+        raise HttpUnauthorized('Incorrect username or password')
+    return user
+
+
+def create_access_token(**payload_data):
+    to_encode = payload_data.copy()
+    expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    to_encode.update({"exp": expire})
+    return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+
+
+@auth_router.post("/token", response_model=schemas.Token)
+def get_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    user = authenticate_user(db, form_data.username, form_data.password)
+    access_token = create_access_token(sub=user.email)
     return {"access_token": access_token, "token_type": "bearer"}

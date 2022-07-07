@@ -10,6 +10,10 @@ python-jose = {extras = ["cryptography"], version = "*"}
 uvicorn = "*"
 python-multipart = "*"
 fastapi = "*"
+psycopg2-binary = "*"
+pydantic = {extras = ["email"], version = "*"}
+databases = "*"
+asyncpg = "*"
 
 [dev-packages]
 flake8 = "*"

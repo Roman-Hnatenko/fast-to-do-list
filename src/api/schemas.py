@@ -1,31 +1,36 @@
-from datetime import datetime
-from uuid import UUID
-
-from pydantic import BaseModel, EmailStr
-
-# class User(BaseModel):
-#     id: UUID
-#     username: str
-#     email: EmailStr
+from pydantic import BaseModel, EmailStr, Field
 
 
-class Task(BaseModel):
+class UserBase(BaseModel):
+    name: str
+    email: EmailStr
+
+
+class UserInput(UserBase):
+    password: str = Field()
+
+
+class UserOutput(UserBase):
+    id: int
+
+    class Config:
+        orm_mode = True
+
+
+class TaskInput(BaseModel):
     title: str
     description: str
-    create_at: datetime
-    finished_at: datetime
+
+
+class TaskOutput(TaskInput):
+    id: int
+    create_at: str
+    finished_at: str = Field(default=None)
+
+    class Config:
+        orm_mode = True
 
 
 class Token(BaseModel):
     access_token: str
     token_type: str
-
-
-class User(BaseModel):
-    username: str
-    email: str | None = None
-    disabled: bool | None = None
-
-
-class UserInDB(User):
-    hashed_password: str
