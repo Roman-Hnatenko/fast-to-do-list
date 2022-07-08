@@ -4,16 +4,15 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-sqlalchemy = "*"
 passlib = {extras = ["bcrypt"], version = "*"}
 python-jose = {extras = ["cryptography"], version = "*"}
 uvicorn = "*"
 python-multipart = "*"
 fastapi = "*"
-psycopg2-binary = "*"
 pydantic = {extras = ["email"], version = "*"}
 asyncpg = "*"
 alembic = "*"
+sqlalchemy = {extras = ["asyncio"], version = "*"}
 
 [dev-packages]
 flake8 = "*"

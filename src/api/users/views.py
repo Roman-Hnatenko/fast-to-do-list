@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Body, Depends, HTTPException, status
-from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session
+
 from api.dependencies import get_db
 
 from .models import UserInput, UserOutput

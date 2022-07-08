@@ -2,11 +2,17 @@ from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 
 from api.access_token.views import auth_router
+from api.database import async_session
 from api.exceptions import HttpUnauthorized
 from api.tasks.views import tasks_router
 from api.users.views import users_router
 
 app = FastAPI()
+
+
+@app.on_event("shutdown")
+async def shutdown():
+    await async_session.remove()
 
 
 @app.exception_handler(HttpUnauthorized)
