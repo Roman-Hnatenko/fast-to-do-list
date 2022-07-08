@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Body, Depends, HTTPException, Response, status
 from sqlalchemy.orm import Session
 
-from api.ddb_models import UserModel
+from api.db_models import UserModel
 from api.dependencies import get_current_user, get_db
 from api.exceptions import RecordNotFoundError
 
@@ -54,9 +54,10 @@ async def update_task(
     db: Session = Depends(get_db),
 ):
     try:
-        update_task_in_db(db, id, task, user.id)
+        updated_task = update_task_in_db(db, id, task, user.id)
     except RecordNotFoundError:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail='Task does not exist',
         )
+    return updated_task

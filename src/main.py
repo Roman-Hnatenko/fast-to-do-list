@@ -16,7 +16,7 @@ async def unicorn_exception_handler(request: Request, exc: HttpUnauthorized):
     return JSONResponse(
         status_code=status.HTTP_401_UNAUTHORIZED,
         content=exc.detail,
-        headers={"WWW-Authenticate": "Bearer"},
+        headers={'WWW-Authenticate': 'Bearer'},
     )
 
 

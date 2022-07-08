@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from api.ddb_models import UserModel
+from api.db_models import UserModel
 from api.settings import pwd_context
 
 from .models import UserInput

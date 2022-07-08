@@ -1,4 +1,6 @@
-from pydantic import BaseModel, Field
+from datetime import datetime
+
+from pydantic import BaseModel
 
 
 class TaskInput(BaseModel):
@@ -8,8 +10,8 @@ class TaskInput(BaseModel):
 
 class TaskOutput(TaskInput):
     id: int
-    create_at: str
-    finished_at: str = Field(default=None)
+    created_at: str
+    finished_at: datetime | None = None
 
     class Config:
         orm_mode = True
@@ -18,4 +20,4 @@ class TaskOutput(TaskInput):
 class TaskToUpdate(BaseModel):
     title: str | None = None
     description: str | None = None
-    finished_at: str | None = None
+    finished_at: datetime | None = None

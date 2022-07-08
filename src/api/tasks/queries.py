@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from api.ddb_models import TaskModel
+from api.db_models import TaskModel
 from api.exceptions import RecordNotFoundError
 
 from .models import TaskInput, TaskToUpdate
@@ -30,9 +30,9 @@ def delete_task_from_db(db: Session, id: int, user_id: int):
 
 
 def update_task_in_db(db: Session, id: int, task: TaskToUpdate, user_id: int):
-    ddb_task = db.query(TaskModel).filter(TaskModel.id == id, TaskModel.owner_id == user_id)
-    if ddb_task:
-        ddb_task.update(task.dict(exclude_unset=True))
+    query = db.query(TaskModel).filter(TaskModel.id == id, TaskModel.owner_id == user_id)
+    if items := query.first():
+        query.update(task.dict(exclude_unset=True))
         db.commit()
-        return
+        return items
     raise RecordNotFoundError()
