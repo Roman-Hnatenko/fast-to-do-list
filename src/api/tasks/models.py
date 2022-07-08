@@ -10,7 +10,7 @@ class TaskInput(BaseModel):
 
 class TaskOutput(TaskInput):
     id: int
-    created_at: str
+    created_at: datetime
     finished_at: datetime | None = None
 
     class Config:
