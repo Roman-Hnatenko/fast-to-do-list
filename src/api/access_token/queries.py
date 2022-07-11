@@ -1,10 +1,9 @@
-from api.database import async_session
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from api.db_models import UserModel
-from api.exceptions import RecordNotFoundError
 
 
-async def get_user(email: str) -> UserModel:
-    if ddb_user := await async_session.query(UserModel).filter(UserModel.email == email).first():
-    # if ddb_user := await async_session.get(UserModel, {'email': email}):
-        return ddb_user
-    raise RecordNotFoundError()
+async def get_user(session: AsyncSession, email: str) -> UserModel:
+    result = await session.execute(select(UserModel).where(UserModel.email == email))
+    return result.scalar_one()

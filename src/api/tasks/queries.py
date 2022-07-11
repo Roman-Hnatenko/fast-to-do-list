@@ -1,38 +1,37 @@
-from sqlalchemy.orm import Session
+from sqlalchemy import delete, select, update
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.db_models import TaskModel
-from api.exceptions import RecordNotFoundError
 
 from .models import TaskInput, TaskToUpdate
 
 
-def get_task(db: Session, task_id: str):
-    return db.query(TaskModel).filter(TaskModel.id == task_id).first()
-
-
-def save_task(db: Session, task: TaskInput, user_id: int) -> TaskModel:
+async def save_task(session: AsyncSession, task: TaskInput, user_id: int) -> TaskModel:
     db_task = TaskModel(**task.dict(), owner_id=user_id)
-    db.add(db_task)
-    db.commit()
-    db.refresh(db_task)
+    session.add(db_task)
+    await session.commit()
+    await session.refresh(db_task)
     return db_task
 
 
-def get_task_from_db(db: Session, id: int, user_id: int) -> TaskModel:
-    if task := db.query(TaskModel).filter(TaskModel.id == id, TaskModel.owner_id == user_id).first():
-        return task
-    raise RecordNotFoundError()
+async def get_task_from_db(session: AsyncSession, id: int, user_id: int) -> TaskModel:
+    result = await session.execute(select(TaskModel).where(TaskModel.id == id, TaskModel.owner_id == user_id))
+    return result.scalar_one()
 
 
-def delete_task_from_db(db: Session, id: int, user_id: int):
-    db.query(TaskModel).filter(TaskModel.id == id, TaskModel.owner_id == user_id).delete()
-    db.commit()
+async def delete_task_from_db(session: AsyncSession, id: int, user_id: int):
+    query = delete(TaskModel).where(TaskModel.id == id, TaskModel.owner_id == user_id).returning(TaskModel)
+    await session.execute(query)
+    await session.commit()
 
 
-def update_task_in_db(db: Session, id: int, task: TaskToUpdate, user_id: int):
-    query = db.query(TaskModel).filter(TaskModel.id == id, TaskModel.owner_id == user_id)
-    if items := query.first():
-        query.update(task.dict(exclude_unset=True))
-        db.commit()
-        return items
-    raise RecordNotFoundError()
+async def update_task_in_db(session: AsyncSession, id: int, input_task: TaskToUpdate, user_id: int):
+    query = (
+        update(TaskModel)
+        .where(TaskModel.id == id, TaskModel.owner_id == user_id)
+        .values(**input_task.dict(exclude_unset=True))
+        .returning(TaskModel)
+    )
+    task = await session.execute(query)
+    await session.commit()
+    return task.first()

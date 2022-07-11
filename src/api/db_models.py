@@ -26,7 +26,7 @@ class TaskModel(Base):
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String)
     description = Column(String)
-    created_at = Column(DateTime, default=get_current_utc_time)
+    created_at = Column(DateTime(timezone=True), default=get_current_utc_time)
     finished_at = Column(DateTime)
     owner_id = Column(Integer, ForeignKey('users.id'))
     owner = relationship('UserModel', back_populates='tasks')

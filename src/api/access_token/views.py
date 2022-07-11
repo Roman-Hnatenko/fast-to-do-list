@@ -3,10 +3,13 @@ from datetime import datetime, timedelta
 from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from jose import jwt
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm.exc import NoResultFound
 
 from api import settings
 from api.db_models import UserModel
-from api.exceptions import HttpUnauthorized, RecordNotFoundError
+from api.dependencies import get_session
+from api.exceptions import HttpUnauthorized
 
 from .models import Token
 from .queries import get_user
@@ -14,10 +17,10 @@ from .queries import get_user
 auth_router = APIRouter()
 
 
-async def authenticate_user(email: str, password: str) -> UserModel:
+async def authenticate_user(session: AsyncSession, email: str, password: str) -> UserModel:
     try:
-        user = await get_user(email)
-    except RecordNotFoundError:
+        user = await get_user(session, email)
+    except NoResultFound:
         raise HttpUnauthorized('Incorrect username or password')
     if not settings.pwd_context.verify(password, user.hashed_password):
         raise HttpUnauthorized('Incorrect username or password')
@@ -32,7 +35,10 @@ def create_access_token(**payload_data):
 
 
 @auth_router.post('/token', response_model=Token)
-async def get_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
-    user = await authenticate_user(form_data.username, form_data.password)
+async def get_access_token(
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    session: AsyncSession = Depends(get_session),
+):
+    user = await authenticate_user(session, form_data.username, form_data.password)
     access_token = create_access_token(sub=user.email)
     return {'access_token': access_token, 'token_type': 'bearer'}

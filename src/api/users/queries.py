@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.db_models import UserModel
 from api.settings import pwd_context
@@ -6,13 +6,13 @@ from api.settings import pwd_context
 from .models import UserInput
 
 
-def create_user(db: Session, user: UserInput) -> UserModel:
+async def create_user(session: AsyncSession, user: UserInput) -> UserModel:
     db_user = UserModel(
         email=user.email,
         name=user.name,
         hashed_password=pwd_context.hash(user.password),
     )
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
+    session.add(db_user)
+    await session.commit()
+    await session.refresh(db_user)
     return db_user
