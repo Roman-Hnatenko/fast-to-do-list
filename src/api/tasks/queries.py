@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.db_models import TaskModel
 
+from .enums import TasksStatus
 from .models import TaskInput, TaskToUpdate
 
 
@@ -35,3 +36,13 @@ async def update_task_in_db(session: AsyncSession, id: int, input_task: TaskToUp
     task = await session.execute(query)
     await session.commit()
     return task.first()
+
+
+async def get_tasks_list(session: AsyncSession, user_id: int, tasks_status: TasksStatus):
+    filters = [TaskModel.owner_id == user_id]
+    if tasks_status == TasksStatus.done:
+        filters.append(TaskModel.finished_at.is_not(None))
+    elif tasks_status == TasksStatus.in_progress:
+        filters.append(TaskModel.finished_at.is_(None))
+    result = await session.execute(select(TaskModel).where(*filters))
+    return result.scalars().all()
