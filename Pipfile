@@ -13,6 +13,7 @@ pydantic = {extras = ["email"], version = "*"}
 asyncpg = "*"
 alembic = "*"
 sqlalchemy = {extras = ["asyncio"], version = "*"}
+aioredis = "*"
 
 [dev-packages]
 flake8 = "*"
