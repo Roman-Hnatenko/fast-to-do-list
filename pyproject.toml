@@ -1,9 +1,11 @@
-[[source]]
-url = "https://pypi.org/simple"
-verify_ssl = true
-name = "pypi"
+[tool.poetry]
+name = "fast-to-do-list"
+version = "0.1.0"
+description = ""
+authors = ["Roman Hnatenko <romanhnatenko@gmail.com>"]
 
-[packages]
+[tool.poetry.dependencies]
+python = "^3.10"
 passlib = {extras = ["bcrypt"], version = "*"}
 python-jose = {extras = ["cryptography"], version = "*"}
 uvicorn = "*"
@@ -15,10 +17,11 @@ alembic = "*"
 sqlalchemy = {extras = ["asyncio"], version = "*"}
 aioredis = "*"
 
-[dev-packages]
+[tool.poetry.dev-dependencies]
 flake8 = "*"
 mypy = "*"
 isort = "*"
 
-[requires]
-python_version = "3.10"
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
