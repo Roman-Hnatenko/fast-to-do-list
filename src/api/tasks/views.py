@@ -1,6 +1,9 @@
+import csv
+import io
 from typing import List
 
 from fastapi import APIRouter, Body, Depends, HTTPException, Query, Response, status
+from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm.exc import NoResultFound
 
@@ -10,6 +13,8 @@ from api.dependencies import get_current_user, get_session
 from .enums import TasksStatus
 from .models import TaskInput, TaskOutput, TaskToUpdate
 from .queries import delete_task_from_db, get_task_from_db, get_tasks_list, save_task, update_task_in_db
+
+CSV_HEADERS = ('id', 'title', 'description', 'created_at', 'finished_at')
 
 tasks_router = APIRouter(prefix='/task')
 
@@ -21,6 +26,20 @@ async def get_tasks(
     tasks_status: TasksStatus = Query(default=TasksStatus.all),
 ):
     return await get_tasks_list(session, user.id, tasks_status)
+
+
+@tasks_router.get('/csv_file')
+async def get_csv_file(
+    user: UserModel = Depends(get_current_user),
+    session: AsyncSession = Depends(get_session),
+    tasks_status: TasksStatus = Query(default=TasksStatus.all),
+):
+    tasks = await get_tasks_list(session, user.id, tasks_status)
+    csv_file = io.StringIO()
+    csv_writer = csv.writer(csv_file)
+    csv_writer.writerow(CSV_HEADERS)
+    csv_writer.writerows(tasks)
+    return StreamingResponse(io.BytesIO(csv_file.getvalue().encode()), media_type='text/csv')
 
 
 @tasks_router.get('/{id}', response_model=TaskOutput)

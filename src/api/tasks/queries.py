@@ -44,5 +44,10 @@ async def get_tasks_list(session: AsyncSession, user_id: int, tasks_status: Task
         filters.append(TaskModel.finished_at.is_not(None))
     elif tasks_status == TasksStatus.in_progress:
         filters.append(TaskModel.finished_at.is_(None))
-    result = await session.execute(select(TaskModel).where(*filters))
-    return result.scalars().all()
+
+    result = await session.execute(
+        select(TaskModel.id, TaskModel.title, TaskModel.description, TaskModel.created_at, TaskModel.finished_at)
+        .where(*filters)
+        .order_by(TaskModel.created_at),
+    )
+    return result.all()
