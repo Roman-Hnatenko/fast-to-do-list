@@ -17,6 +17,7 @@ class UserModel(Base):
     email = Column(String, unique=True, index=True)
     name = Column(String)
     hashed_password = Column(String)
+    # priority = Column(Integer, default=0)
     tasks = relationship('TaskModel', back_populates='owner')
 
 

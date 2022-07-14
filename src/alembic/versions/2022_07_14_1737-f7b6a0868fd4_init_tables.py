@@ -1,16 +1,16 @@
-"""Added initial tables
+"""Init tables
 
-Revision ID: 348729fa04e6
+Revision ID: f7b6a0868fd4
 Revises: 
-Create Date: 2022-07-08 13:33:37.037762
+Create Date: 2022-07-14 17:37:15.999699
 
 """
+from alembic import op
 import sqlalchemy as sa
 
-from alembic import op
 
 # revision identifiers, used by Alembic.
-revision = '348729fa04e6'
+revision = 'f7b6a0868fd4'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -31,7 +31,7 @@ def upgrade() -> None:
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('title', sa.String(), nullable=True),
     sa.Column('description', sa.String(), nullable=True),
-    sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.Column('created_at', sa.DateTime(timezone=True), nullable=True),
     sa.Column('finished_at', sa.DateTime(), nullable=True),
     sa.Column('owner_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['owner_id'], ['users.id'], ),

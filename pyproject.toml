@@ -12,10 +12,11 @@ uvicorn = "*"
 python-multipart = "*"
 fastapi = "*"
 pydantic = {extras = ["email"], version = "*"}
-asyncpg = "*"
 alembic = "*"
 sqlalchemy = {extras = ["asyncio"], version = "*"}
 aioredis = "*"
+psycopg2-binary = "^2.9.3"
+asyncpg = "^0.26.0"
 
 [tool.poetry.dev-dependencies]
 flake8 = "*"

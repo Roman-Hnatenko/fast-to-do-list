@@ -25,7 +25,7 @@ async def get_redis() -> AsyncGenerator[Redis, None]:
     await redis.close()
 
 
-async def get_session() -> AsyncSession:
+async def get_session() -> AsyncGenerator[AsyncSession, None]:
     async with async_session() as session:
         yield session
 
