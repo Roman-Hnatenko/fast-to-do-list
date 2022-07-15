@@ -46,8 +46,15 @@ async def get_tasks_list(session: AsyncSession, user_id: int, tasks_status: Task
         filters.append(TaskModel.finished_at.is_(None))
 
     result = await session.execute(
-        select(TaskModel.id, TaskModel.title, TaskModel.description, TaskModel.created_at, TaskModel.finished_at)
+        select(
+            TaskModel.id,
+            TaskModel.title,
+            TaskModel.description,
+            TaskModel.created_at,
+            TaskModel.finished_at,
+            TaskModel.priority,
+        )
         .where(*filters)
-        .order_by(TaskModel.created_at),
+        .order_by(-TaskModel.priority),
     )
     return result.all()

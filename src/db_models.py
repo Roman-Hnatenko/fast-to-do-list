@@ -17,7 +17,6 @@ class UserModel(Base):
     email = Column(String, unique=True, index=True)
     name = Column(String)
     hashed_password = Column(String)
-    # priority = Column(Integer, default=0)
     tasks = relationship('TaskModel', back_populates='owner')
 
 
@@ -30,4 +29,5 @@ class TaskModel(Base):
     created_at = Column(DateTime(timezone=True), default=get_current_utc_time)
     finished_at = Column(DateTime)
     owner_id = Column(Integer, ForeignKey('users.id'))
+    priority = Column(Integer, default=0)
     owner = relationship('UserModel', back_populates='tasks')
