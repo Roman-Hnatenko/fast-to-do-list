@@ -1,7 +1,7 @@
 from sqlalchemy import delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.db_models import TaskModel
+from db_models import TaskModel
 
 from .enums import TasksStatus
 from .models import TaskInput, TaskToUpdate

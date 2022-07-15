@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.db_models import UserModel
+from db_models import UserModel
 from api.settings import pwd_context
 
 from .models import UserInput

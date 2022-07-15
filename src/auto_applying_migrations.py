@@ -1,5 +1,5 @@
 from alembic import command, config
-from api.database import engine
+from database import engine
 
 
 def run_upgrade(connection, cfg):

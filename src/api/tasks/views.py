@@ -7,7 +7,7 @@ from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm.exc import NoResultFound
 
-from api.db_models import UserModel
+from db_models import UserModel
 from api.dependencies import get_current_user, get_session
 
 from .enums import TasksStatus

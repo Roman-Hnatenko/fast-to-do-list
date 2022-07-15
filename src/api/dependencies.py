@@ -10,10 +10,10 @@ from jose import JWTError, jwt
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.db_models import UserModel
+from database import async_session
+from db_models import UserModel
 
 from . import settings
-from .database import async_session
 from .exceptions import HttpUnauthorized
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='token')

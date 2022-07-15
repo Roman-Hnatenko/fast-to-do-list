@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm.exc import NoResultFound
 
 from api import settings
-from api.db_models import UserModel
+from db_models import UserModel
 from api.dependencies import get_session
 from api.exceptions import HttpUnauthorized
 
