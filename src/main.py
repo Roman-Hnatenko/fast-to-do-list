@@ -5,14 +5,8 @@ from api.access_token.views import auth_router
 from api.exceptions import HttpUnauthorized
 from api.tasks.views import tasks_router
 from api.users.views import users_router
-from auto_applying_migrations import run_async_upgrade
 
 app = FastAPI()
-
-
-@app.on_event("startup")
-async def startup():
-    await run_async_upgrade()
 
 
 @app.exception_handler(HttpUnauthorized)
